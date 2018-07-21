@@ -22,4 +22,9 @@ class InventoryManager: NSObject {
     static func add(item:InventoryItem){
         InventoryManager.items.append(item)
     }
+    // dodato zbog unit testa
+    static func delete(index:Int){
+        InventoryManager.items.remove(at: index)
+    }
+    
 }

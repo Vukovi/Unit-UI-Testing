@@ -56,7 +56,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            InventoryManager.items.remove(at: indexPath.row)
+//            InventoryManager.items.remove(at: indexPath.row)
+            // ovde unit test ne moze da pridje pa se manja sa metodom u InventoryManager-u
+            InventoryManager.delete(index: indexPath.row)
             tableViewMain.reloadData()
         }
     }

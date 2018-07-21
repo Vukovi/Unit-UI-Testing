@@ -9,7 +9,9 @@
 import XCTest
 
 class inventoryappUITests: XCTestCase {
-        
+    
+    var topLevelApp:XCUIApplication? = nil
+    
     override func setUp() {
         super.setUp()
         
@@ -19,13 +21,15 @@ class inventoryappUITests: XCTestCase {
         continueAfterFailure = false
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
         XCUIApplication().launch()
-
+        topLevelApp = XCUIApplication()
+        
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
+        topLevelApp = nil
     }
     
     func testExample() {
@@ -35,69 +39,57 @@ class inventoryappUITests: XCTestCase {
     
     func testClickToDetailView(){
         
-        let app = XCUIApplication()
-        app.tables.staticTexts["Highlander"].tap()
-        app.navigationBars["inventoryapp.DetailView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
+        topLevelApp?.tables.staticTexts["Highlander"].tap()
+        topLevelApp?.navigationBars["inventoryapp.DetailView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
         
     }
     
     func testClickToViewAndBack(){
         
-        let app = XCUIApplication()
-        let table = app.tables["mainTable"]
-        table.cells.staticTexts["Toyota"].tap()
-        app.navigationBars["inventoryapp.DetailView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
+        let table = topLevelApp?.tables["mainTable"]
+        table?.cells.staticTexts["Toyota"].tap()
+        topLevelApp?.navigationBars["inventoryapp.DetailView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
         
     }
     
-    func testAddOne() {
-        XCUIApplication().navigationBars["inventoryapp.View"].buttons["Add"].tap()
-        
-        let app = XCUIApplication()
-        let modelTextField = app.textFields["model"]
-        modelTextField.tap()
-        modelTextField.typeText("Tundra")
-        
-        let unitsTextField = app.textFields["units"]
-        unitsTextField.tap()
-        unitsTextField.typeText("10")
-        
-        let makeTextField = app.textFields["make"]
-        makeTextField.tap()
-        makeTextField.typeText("Toyota")
-        
-        app.buttons["Add"].tap()
-        app.navigationBars["inventoryapp.AddView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
-        
-        let table = app.tables["mainTable"]
-        XCTAssertEqual(table.cells.count, 5)
+    func testAddOneItem(){
+        addOne()
+        XCTAssertEqual(topLevelApp?.tables["mainTable"].cells.count, 5)
     }
     
-    func testAddOneDeleteSame() {
-        
+    func addOne() {
         XCUIApplication().navigationBars["inventoryapp.View"].buttons["Add"].tap()
-        let app = XCUIApplication()
-
-        let modelTextField = app.textFields["model"]
-        modelTextField.tap()
-        modelTextField.typeText("Tundra")
         
-        let unitsTextField = app.textFields["units"]
-        unitsTextField.tap()
-        unitsTextField.typeText("10")
+        let modelTextField = topLevelApp?.textFields["model"]
+        modelTextField?.tap()
+        modelTextField?.typeText("Tundra")
         
-        let makeTextField = app.textFields["make"]
-        makeTextField.tap()
-        makeTextField.typeText("Toyota")
+        let unitsTextField = topLevelApp?.textFields["units"]
+        unitsTextField?.tap()
+        unitsTextField?.typeText("10")
         
-        app.buttons["Add"].tap()
-        app.navigationBars["inventoryapp.AddView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
+        let makeTextField = topLevelApp?.textFields["make"]
+        makeTextField?.tap()
+        makeTextField?.typeText("Toyota")
         
-        let maintableTable = app.tables["mainTable"]
-        maintableTable.staticTexts["Tundra"].swipeLeft()
-        maintableTable.buttons["Delete"].tap()
+        topLevelApp?.buttons["Add"].tap()
+        topLevelApp?.navigationBars["inventoryapp.AddView"].children(matching: .button).matching(identifier: "Back").element(boundBy: 0).tap()
         
-        XCTAssertEqual(maintableTable.cells.count, 4)
+    }
+    
+    func testAddOneDelete() {
+        addOne()
+        XCTAssertEqual(topLevelApp?.tables.cells.count, 5)
+        testDeleteOne(rowCount: 4)
+        
+    }
+    
+    func testDeleteOne(rowCount:UInt? = 3) {
+        let maintableTable = topLevelApp?.tables["mainTable"]
+        maintableTable?.staticTexts["Highlander"].swipeLeft()
+        maintableTable?.buttons["Delete"].tap()
+        
+        XCTAssertEqual(maintableTable?.cells.count, rowCount)
         
     }
 }
